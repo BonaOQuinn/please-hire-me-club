@@ -44,7 +44,7 @@ Choose **Sign in with ChatGPT** when it asks.
 **2. Get the repo (1 min).**
 
 ```bash
-git clone --branch free-codex --single-branch <this-repo-url> please-hire-me
+git clone --branch free-codex --single-branch https://github.com/BonaOQuinn/please-hire-me-club.git please-hire-me
 cd please-hire-me
 ```
 
