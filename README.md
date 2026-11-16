@@ -1,76 +1,71 @@
-# please-hire-me: club edition
+# please-hire-me: Track 2, Free Claude
 
-A club-meeting kit built on [alecswang/please-hire-me](https://github.com/alecswang/please-hire-me)
-(MIT). The original is an agent that fills out real job applications from your resume, using the
-company's own Greenhouse / Lever / Ashby form. It needs a paid Claude Code plan. This repo adds two
-branches so people on free accounts can follow the same track.
+For people with a **free claude.ai account** and nothing else. No Claude Code, no browser
+extension, no installs. Claude is the brain in a chat, and **you are the hands**: you paste in the
+posting and the form, Claude writes the answers, and you copy them into the real form and click
+Submit yourself. That makes the review checkpoint automatic: nothing is sent unless you send it.
 
-## Pick your track
+Based on [alecswang/please-hire-me](https://github.com/alecswang/please-hire-me) (MIT). The other
+tracks are on the [`main`](../../tree/main) (paid Claude Code) and
+[`free-codex`](../../tree/free-codex) branches.
 
-| You have | Track | Branch | Who clicks Submit |
-|---|---|---|---|
-| Paid Claude (Pro/Max) with Claude Code + the Claude in Chrome extension | **1. Claude Code** | `main` (this branch) | The agent, after you say yes at the checkpoint |
-| A free claude.ai account, nothing else | **2. Free Claude** | [`free-claude`](../../tree/free-claude) | You. Claude is the brain, you are the hands |
-| A free ChatGPT account (Codex CLI) | **3. Free Codex** | [`free-codex`](../../tree/free-codex) | You (recommended) or Codex, after you say yes |
+## What you need
+- A free account at [claude.ai](https://claude.ai)
+- Your resume (PDF or text)
+- A real job you want to apply to, on a company's own Greenhouse / Lever / Ashby / Workable form
 
-Every track ends in the same place: **one real application, reviewed by you before it is sent.**
+## What is in this branch
 
-```bash
-# Tracks 2 and 3: clone only your branch
-git clone --branch free-claude --single-branch <this-repo-url>
-git clone --branch free-codex  --single-branch <this-repo-url>
-```
-
-## The shared meeting flow
-
-| Step | What happens |
+| File | What it is |
 |---|---|
-| 1. Setup (about 10 min) | The AI reads your resume, asks one list of questions, and drafts your three config files. It never invents a fact about you. |
-| 2. Pick a posting | One real, live opening that matches your targets. |
-| 3. Answer sheet | Every question on the form, answered only from your config. Unknown facts become `NEEDS HUMAN`. |
-| 4. **Checkpoint** | You review every answer before anything is submitted. |
-| 5. Log | The application is recorded so you never apply to the same company twice by accident. |
+| `CHAT.md` | The playbook. Claude follows it for the whole track. |
+| `config/profile.example.json` | Checklist of every fact a form asks for. |
+| `config/answers.example.md` | Template for your free-text answers and fact sheet. |
+| `config/settings.example.json` | What counts as a good job for you. |
+| `data/boards.md` | Company boards that were live when last checked. A place to find postings. |
 
-## Track 1: Claude Code (this branch)
+## The track
 
-**You need:** [Claude Code](https://claude.com/claude-code) on a paid plan, Chrome with the
-[Claude in Chrome](https://claude.ai/chrome) extension signed in to the same account, and your
-resume as a PDF.
+**1. Start a chat (2 min).** Open claude.ai and make a new chat. If your plan has Projects, create
+one and add the five files above to its knowledge, so you can reload them next session. Otherwise
+attach them to the chat. Free plans have message limits, so keep the files attached rather than
+re-pasting them.
 
-```bash
-git clone <this-repo-url> please-hire-me
-cd please-hire-me
-claude
-```
+**2. Set up (10 min).** Send this, with your resume attached:
 
-Then type **"set me up"**. Claude reads your resume, shows you every value it extracted, asks one
-numbered question list, drafts `config/answers.md`, and writes your config. At the end it fills one
-real posting, shows you every answer, and **submits only after you say yes** (say no and it closes
-the tab and sends nothing).
+> Follow CHAT.md. Here is my resume. Set me up, then walk me through one application.
 
-For the club, set `schedule.frequency` to `manual` and do not install the scheduler: scheduled runs
-submit with no checkpoint. To get a checkpoint on every run, ask Claude in chat for "one
-application, stop before submitting".
+Claude shows every value it read off your resume for you to correct, then asks **one numbered
+list** of questions, drafts your answer templates from your real work, and asks you to verify the
+exact numbers and titles it used. At the end it prints three files: `profile.json`, `answers.md`,
+`settings.json`. Save them somewhere private, and add them to the Project knowledge. They contain
+personal data, so do not post them or commit them to a public repo.
 
-The full upstream documentation is in [`docs/UPSTREAM-README.md`](docs/UPSTREAM-README.md), and the
-agent's playbook is [`CLAUDE.md`](CLAUDE.md).
+**3. Pick a posting (5 min).** Find one live opening, from `boards.md` or a company's careers page.
+Paste the URL and the posting text. Claude says **APPLY** or **SKIP** and why.
 
-## Track 2: Free Claude
+**4. Get the answer sheet (5 min).** Open the application form, select all, copy, and paste it
+into the chat. Claude returns a table of every field, the answer to type, where the answer came
+from, and a status of `READY`, `CHECK` or `NEEDS HUMAN`. It drafts a cover letter if the form has a
+place for one.
 
-No Claude Code, no extension. See the [`free-claude`](../../tree/free-claude) branch.
-You paste a playbook into a claude.ai chat; Claude drafts your config and your answer sheet, and you
-paste the answers into the form and click Submit yourself.
+**5. Checkpoint.** Paste each answer into the form. Compare every field to the table, especially the
+`CHECK` and `NEEDS HUMAN` rows and every number. Only when everything matches, click Submit.
 
-## Track 3: Free Codex
+**6. Log it.** Tell Claude "submitted" and it writes a log entry. Save that in a file called
+`applications-log.md` and paste it into later chats so Claude can catch duplicate applications.
 
-OpenAI's Codex CLI with a ChatGPT sign-in and a Playwright browser. See the
-[`free-codex`](../../tree/free-codex) branch.
+## Limits to know about
+- **You do the typing.** There is no agent clicking for you. That is the cost of a free account.
+- **No automatic job search or scheduling.** You find the posting.
+- **No tailored resume PDF.** Claude can suggest which bullets to lead with, but you edit your own
+  resume.
+- **Claude can be wrong.** It is told never to invent facts, but you are the final check. That is
+  what step 5 is for.
+- **Privacy.** You are pasting your resume into a chat. Remove anything you would not want there.
+- **Sign-ins, 2FA and CAPTCHAs are yours.** Never paste a password or a login code into the chat.
+- **Real applications.** Only apply to roles you want.
 
-## Good to know
-
-- **Your data stays local.** `config/profile.json`, `config/answers.md`, `config/settings.json`,
-  `applications/`, `logs/` and `screenshots/` are gitignored. Do not commit them to a public repo.
-- **Sign-ins, 2FA and CAPTCHAs are always yours.** No track creates accounts or types passwords.
-- **Applications are real.** Only apply to roles you actually want.
-- Credit: all the playbook and scripts are from
-  [alecswang/please-hire-me](https://github.com/alecswang/please-hire-me), MIT licensed.
+## Want more automation?
+Pair up with a club member on the Claude Code track or the Codex track for step 4 and 5, or move
+to the [`free-codex`](../../tree/free-codex) branch if you can install the Codex CLI.
