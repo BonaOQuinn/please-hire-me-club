@@ -17,8 +17,8 @@ Every track ends in the same place: **one real application, reviewed by you befo
 
 ```bash
 # Tracks 2 and 3: clone only your branch
-git clone --branch free-claude --single-branch <this-repo-url>
-git clone --branch free-codex  --single-branch <this-repo-url>
+git clone --branch free-claude --single-branch https://github.com/BonaOQuinn/please-hire-me-club.git
+git clone --branch free-codex  --single-branch https://github.com/BonaOQuinn/please-hire-me-club.git
 ```
 
 ## The shared meeting flow
@@ -38,7 +38,7 @@ git clone --branch free-codex  --single-branch <this-repo-url>
 resume as a PDF.
 
 ```bash
-git clone <this-repo-url> please-hire-me
+git clone https://github.com/BonaOQuinn/please-hire-me-club.git please-hire-me
 cd please-hire-me
 claude
 ```
