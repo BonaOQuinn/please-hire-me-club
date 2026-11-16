@@ -1,76 +1,101 @@
-# please-hire-me: club edition
+# please-hire-me: Track 3, Free Codex
 
-A club-meeting kit built on [alecswang/please-hire-me](https://github.com/alecswang/please-hire-me)
-(MIT). The original is an agent that fills out real job applications from your resume, using the
-company's own Greenhouse / Lever / Ashby form. It needs a paid Claude Code plan. This repo adds two
-branches so people on free accounts can follow the same track.
+For people with a **free ChatGPT account** who can run OpenAI's **Codex CLI**. Codex reads your
+resume, writes your config, finds a live opening, and fills the company's real application form in
+a browser window you can watch. It stops before Submit, so **you review every answer and click
+Submit yourself.**
 
-## Pick your track
+Based on [alecswang/please-hire-me](https://github.com/alecswang/please-hire-me) (MIT). The other
+tracks are on the [`main`](../../tree/main) (paid Claude Code) and
+[`free-claude`](../../tree/free-claude) (chat only) branches.
 
-| You have | Track | Branch | Who clicks Submit |
-|---|---|---|---|
-| Paid Claude (Pro/Max) with Claude Code + the Claude in Chrome extension | **1. Claude Code** | `main` (this branch) | The agent, after you say yes at the checkpoint |
-| A free claude.ai account, nothing else | **2. Free Claude** | [`free-claude`](../../tree/free-claude) | You. Claude is the brain, you are the hands |
-| A free ChatGPT account (Codex CLI) | **3. Free Codex** | [`free-codex`](../../tree/free-codex) | You (recommended) or Codex, after you say yes |
+## What you need
+- A ChatGPT account (free is fine for the club; the free tier has usage limits, so a long session
+  can run out. Check OpenAI's current Codex limits before the meeting.)
+- Node.js 20+ and Python 3, plus Git
+- Chrome or Chromium installed
+- Your resume as a PDF
+- **Windows:** run everything in WSL (recommended) or Git Bash. **macOS and Linux:** any terminal.
 
-Every track ends in the same place: **one real application, reviewed by you before it is sent.**
+## What is in this branch
 
-```bash
-# Tracks 2 and 3: clone only your branch
-git clone --branch free-claude --single-branch <this-repo-url>
-git clone --branch free-codex  --single-branch <this-repo-url>
-```
-
-## The shared meeting flow
-
-| Step | What happens |
+| Path | Why it is here |
 |---|---|
-| 1. Setup (about 10 min) | The AI reads your resume, asks one list of questions, and drafts your three config files. It never invents a fact about you. |
-| 2. Pick a posting | One real, live opening that matches your targets. |
-| 3. Answer sheet | Every question on the form, answered only from your config. Unknown facts become `NEEDS HUMAN`. |
-| 4. **Checkpoint** | You review every answer before anything is submitted. |
-| 5. Log | The application is recorded so you never apply to the same company twice by accident. |
+| `AGENTS.md` | Tells Codex how to run the playbook with Playwright and the checkpoint. |
+| `CLAUDE.md` | The playbook itself (the file name is historical; Codex follows it via `AGENTS.md`). |
+| `config/*.example.*`, `config/spec.md`, `config/documents.md` | Templates and rules for your config and for answers and cover letters. |
+| `data/` | Live company boards, field notes, sourcing lists, and the posting queue template. |
+| `scripts/` | Sweeps that find postings, the duplicate checker, and the answer-quality checker. |
 
-## Track 1: Claude Code (this branch)
+Left out on purpose: the scheduler, the Gmail code broker, the LaTeX resume tailoring and the
+Claude-only hooks.
 
-**You need:** [Claude Code](https://claude.com/claude-code) on a paid plan, Chrome with the
-[Claude in Chrome](https://claude.ai/chrome) extension signed in to the same account, and your
-resume as a PDF.
+## The track
+
+**1. Install Codex (2 min).**
 
 ```bash
-git clone <this-repo-url> please-hire-me
-cd please-hire-me
-claude
+npm install -g @openai/codex
+codex
 ```
 
-Then type **"set me up"**. Claude reads your resume, shows you every value it extracted, asks one
-numbered question list, drafts `config/answers.md`, and writes your config. At the end it fills one
-real posting, shows you every answer, and **submits only after you say yes** (say no and it closes
-the tab and sends nothing).
+Choose **Sign in with ChatGPT** when it asks.
 
-For the club, set `schedule.frequency` to `manual` and do not install the scheduler: scheduled runs
-submit with no checkpoint. To get a checkpoint on every run, ask Claude in chat for "one
-application, stop before submitting".
+**2. Get the repo (1 min).**
 
-The full upstream documentation is in [`docs/UPSTREAM-README.md`](docs/UPSTREAM-README.md), and the
-agent's playbook is [`CLAUDE.md`](CLAUDE.md).
+```bash
+git clone --branch free-codex --single-branch <this-repo-url> please-hire-me
+cd please-hire-me
+```
 
-## Track 2: Free Claude
+**3. Add the browser (3 min).** Codex needs a browser it can drive. Add the Playwright MCP server:
 
-No Claude Code, no extension. See the [`free-claude`](../../tree/free-claude) branch.
-You paste a playbook into a claude.ai chat; Claude drafts your config and your answer sheet, and you
-paste the answers into the form and click Submit yourself.
+```bash
+codex mcp add playwright -- npx @playwright/mcp@latest
+codex mcp list
+```
 
-## Track 3: Free Codex
+If that command is not in your Codex version, add the same server to `~/.codex/config.toml`:
 
-OpenAI's Codex CLI with a ChatGPT sign-in and a Playwright browser. See the
-[`free-codex`](../../tree/free-codex) branch.
+```toml
+[mcp_servers.playwright]
+command = "npx"
+args = ["@playwright/mcp@latest"]
+```
 
-## Good to know
+Playwright opens a visible browser window. Leave it visible so you can watch and sign in to sites
+yourself when needed.
 
-- **Your data stays local.** `config/profile.json`, `config/answers.md`, `config/settings.json`,
-  `applications/`, `logs/` and `screenshots/` are gitignored. Do not commit them to a public repo.
-- **Sign-ins, 2FA and CAPTCHAs are always yours.** No track creates accounts or types passwords.
-- **Applications are real.** Only apply to roles you actually want.
-- Credit: all the playbook and scripts are from
-  [alecswang/please-hire-me](https://github.com/alecswang/please-hire-me), MIT licensed.
+**4. Set up (10 min).** Start Codex in the repo folder (`codex`) and send:
+
+> Follow AGENTS.md. Set me up with my resume at <path to your PDF>.
+
+Codex shows every value it read off your resume for you to correct, asks **one numbered list** of
+questions, drafts `config/answers.md` from your real work, and asks you to check the exact numbers
+and titles it used. It writes your three config files. It does not open the browser or apply to
+anything during setup.
+
+**5. The supervised application (10 min).** Codex finds one real posting, runs the duplicate checks,
+fills the form in the browser window, and writes everything down. Then it stops and shows you:
+the URL, every question and answer, the files it uploaded, and a screenshot.
+
+**6. Checkpoint.** Review the form in the browser. When it all looks right, **click Submit
+yourself** and tell Codex you did. It records the confirmation. If anything is wrong, say so and it
+corrects it, or tell it not to send and it sends nothing. Prefer Codex to click? Say "yes, submit"
+in chat. A human click is the default because it also avoids bot-detection problems on some forms.
+
+**Just practicing?** Tell Codex you only want a practice run. It does everything except submit and
+logs it as a dry run.
+
+## Limits to know about
+- **No scheduled runs.** Each application is a request you make in this chat.
+- **Bot detection.** Playwright is an automated browser, so some forms may flag it. When one does,
+  Codex stops and marks it for you instead of retrying.
+- **Some forms are out.** Anything needing an account, a login code, an interactive CAPTCHA, or an
+  emailed verification code after Submit is handed back to you.
+- **No tailored resume PDF.** It uploads your own resume and writes a text cover letter.
+- **Untested combination.** This branch adapts a playbook written for Claude Code to Codex.
+  Run a practice application before the meeting.
+- **Privacy.** Your config and logs stay on your machine and are gitignored. Do not commit them to
+  a public repo.
+- **Real applications.** Only apply to roles you want.
